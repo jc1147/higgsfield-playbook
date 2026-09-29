@@ -1,0 +1,7 @@
+node_modules/
+outputs/
+
+# Credentials — HF_CREDENTIALS lives in .env.local. Never commit.
+.env
+.env.*
+!.env.example

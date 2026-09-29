@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Graphics Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F5F7; --surface:#FFFFFF; --ink:#14171D; --soft:#586070; --line:#DFE3EA; --accent:#2F43C9; --accent-soft:#E8EBFB;
+  --hf:#0B7F61; --hf-soft:#E2F4EE; --fal:#6B35C9; --fal-soft:#EFE7FB;
+  --ok:#17784A; --ok-soft:#E3F3EA; --warn:#94600E; --warn-soft:#FBF0DC; --bad:#B22A1F; --bad-soft:#FBE5E2;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#0E1014; --surface:#161920; --ink:#E7E9EE; --soft:#A2A9B7; --line:#2A2F3A; --accent:#93A0FF; --accent-soft:#1F2446;
+  --hf:#4CCBA3; --hf-soft:#12302A; --fal:#B792FF; --fal-soft:#2A1F43;
+  --ok:#6FD39E; --ok-soft:#13301F; --warn:#F0BE66; --warn-soft:#33270F; --bad:#FF8C80; --bad-soft:#3A1714; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0E1014; --surface:#161920; --ink:#E7E9EE; --soft:#A2A9B7; --line:#2A2F3A; --accent:#93A0FF; --accent-soft:#1F2446;
+  --hf:#4CCBA3; --hf-soft:#12302A; --fal:#B792FF; --fal-soft:#2A1F43;
+  --ok:#6FD39E; --ok-soft:#13301F; --warn:#F0BE66; --warn-soft:#33270F; --bad:#FF8C80; --bad-soft:#3A1714; color-scheme:dark; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:24px;padding-block:40px 80px;display:grid;gap:44px}
+h1,h2,h3{margin:0;line-height:1.15;text-wrap:balance;font-weight:600;letter-spacing:-.01em}
+h1{font-size:clamp(34px,4.4vw,54px)} h2{font-size:28px} h3{font-size:19px}
+p{margin:0;max-width:72ch} ul,ol{margin:0;padding-left:20px;display:grid;gap:6px} li{max-width:78ch}
+a{color:var(--accent)} code,.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:.86em}
+code{background:var(--accent-soft);padding:1px 5px;border-radius:5px;word-break:break-word}
+.eyebrow{font:600 12px/1.3 "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.soft{color:var(--soft)} .lede{font-size:19px;max-width:70ch}
+header.top{display:grid;gap:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--soft)}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:14px;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 11px;border-radius:999px}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+section{display:grid;gap:16px;scroll-margin-top:16px}
+section>header{display:grid;gap:6px}
+.cols{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:8px;align-content:start}
+.box h3{font-size:17px}
+.callout{border-left:4px solid var(--warn);background:var(--warn-soft);padding:12px 16px;border-radius:0 10px 10px 0;max-width:none}
+.callout.info{border-color:var(--accent);background:var(--accent-soft)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.45}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:600 12px/1.3 "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);background:var(--bg);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.group td{background:var(--bg);font:600 12px/1.3 "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding-block:8px}
+.pv{display:inline-block;font:600 11px/1 "IBM Plex Mono",monospace;letter-spacing:.04em;padding:4px 7px;border-radius:6px;white-space:nowrap;vertical-align:1px}
+.pv.hf{color:var(--hf);background:var(--hf-soft)} .pv.fal{color:var(--fal);background:var(--fal-soft)} .pv.none{color:var(--soft);background:var(--bg);border:1px solid var(--line)}
+.st{display:inline-block;font:600 11px/1 "IBM Plex Mono",monospace;padding:4px 7px;border-radius:6px;white-space:nowrap}
+.st.ok{color:var(--ok);background:var(--ok-soft)} .st.pr{color:var(--warn);background:var(--warn-soft)} .st.no{color:var(--bad);background:var(--bad-soft)}
+.est{color:var(--warn);font-weight:600}
+.model{font-weight:600} .ep{display:block;color:var(--soft);font-family:"IBM Plex Mono",monospace;font-size:12px;word-break:break-all}
+.score b{font-variant-numeric:tabular-nums}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+details summary{cursor:pointer;font-weight:600}
+details>*:not(summary){margin-top:10px}
+pre{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;font:13px/1.55 "IBM Plex Mono",monospace}
+footer{font-size:14px;color:var(--soft);display:grid;gap:6px;border-top:1px solid var(--line);padding-top:18px}
+@media (max-width:600px){ .wrap{padding-inline:16px} h2{font-size:24px} .lede{font-size:17px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Team hand-off · fal.ai vs Higgsfield · 28 Sep 2026</p>
+  <h1>AI Graphics Playbook</h1>
+  <p class="lede">What we can make for web pages, email and brand work, and ads; what each model costs against what it's good for; and which model to reach for on which job. Everything here comes from work we've actually run. Where we only have a price or a listing, it says so.</p>
+  <div class="meta">
+    <span><span class="st ok">Verified</span> we ran it and have outputs</span>
+    <span><span class="st pr">Priced only</span> we have a quote, never generated</span>
+    <span><span class="st no">Not done</span> no work exists yet</span>
+    <span><span class="est">est.</span> = our estimate, not a billed figure</span>
+  </div>
+  <nav class="toc" aria-label="Contents">
+    <a href="#short">The short version</a><a href="#versus">fal vs Higgsfield</a><a href="#made">What we've made</a>
+    <a href="#models">Model cards</a><a href="#process">How we get shippable output</a><a href="#costs">Costs</a>
+    <a href="#tools">Tools &amp; access</a><a href="#gaps">Open questions</a>
+  </nav>
+</header>
+
+<section id="short">
+  <header><p class="eyebrow">01</p><h2>The short version: which model for which job</h2>
+  <p class="soft">Default picks from our own tests and projects. Costs are per image unless marked.</p></header>
+  <div class="tbl"><table>
+    <thead><tr><th>Job</th><th>Use</th><th class="num">Cost</th><th>Watch out for</th></tr></thead>
+    <tbody>
+    <tr class="group"><td colspan="4">Web graphics</td></tr>
+    <tr><td>Photoreal scenes with people, poses or devices (service pages, heroes)</td><td><span class="pv hf">Higgsfield</span> Marketing Studio 2.5 <b>Flare</b>, direct mode</td><td class="num"><span class="est">est.</span> $0.20–0.30</td><td>Hands, feet and anatomy need an independent zoomed review. It reuses the same model person unless each one is described.</td></tr>
+    <tr><td>Textless website photography at volume (atmosphere, backgrounds)</td><td><span class="pv fal">fal</span> <b>flux/dev</b></td><td class="num">~$0.025</td><td>No text or logos in the image. Describe mood in words, never hex codes.</td></tr>
+    <tr><td>Illustration plates (anatomy, technical)</td><td><span class="pv hf">Higgsfield</span> <b>Flare</b> with the site's own plates as style references and exact counts in the prompt</td><td class="num"><span class="est">est.</span> as Flare</td><td>Needs a specialist-level check (count the bones). To fix a plate the client likes, <b>edit</b> it with the plate as the reference rather than redrawing, and review the edit too: one edit lost the style, another fused the finger outlines.</td></tr>
+    <tr><td>Icons</td><td><span class="pv hf">Higgsfield</span> <b>Recraft V4.1</b></td><td class="num">$0.035</td><td>The PNGs come back fully opaque (no real transparency). No quality verdict yet.</td></tr>
+    <tr><td>Variations of an image the client already likes</td><td><span class="pv fal">fal</span> <b>flux/dev image-to-image</b>, strength 0.55–0.7</td><td class="num">~$0.025</td><td>Text-to-image drifts away from the original; start from the image.</td></tr>
+    <tr><td>Text inside the image (OG/social cards, typographic posters)</td><td>First choice: set the text in HTML/CSS over a textless image. If it must be baked in: <span class="pv fal">fal</span> <b>GPT Image 2</b>; value pick <b>Nano Banana Pro</b></td><td class="num">$1.00 / $0.15</td><td>Ideogram V3 got the capitals wrong, Flux Pro garbles text, Recraft V4 Pro ignored the aspect ratio.</td></tr>
+    <tr><td>Screens or dashboards with real data</td><td>Real screenshots; AI only for a layout concept</td><td class="num">—</td><td>Flare rewrote real names and addresses ("Flwr Co" became "Fwr Co").</td></tr>
+    <tr><td>Upscaling</td><td>People: <span class="pv fal">fal</span> <b>SeedVR2</b>. Anything with printed text: <span class="pv fal">fal</span> <b>Topaz High Fidelity V2</b></td><td class="num">$0.001/MP · $0.08</td><td>SeedVR2 rewrote cover text ("TALK OE THE TOWH"). Recraft Crisp gave plastic skin.</td></tr>
+    <tr class="group"><td colspan="4">Email &amp; brand</td></tr>
+    <tr><td>Logos and wordmarks</td><td>Hand-built SVG, wordmark set in a real font</td><td class="num">—</td><td>AI wordmarks come back mangled.</td></tr>
+    <tr><td>Brand atmosphere photography</td><td><span class="pv fal">fal</span> <b>flux/dev</b></td><td class="num">~$0.025</td><td>Same rules as web photography: textless, mood in words.</td></tr>
+    <tr><td>Email headers and banners</td><td><span class="st no">Not done</span> Proposed: textless image (flux/dev or Flare) with live HTML text</td><td class="num">—</td><td>We have no tested email work. See open questions.</td></tr>
+    <tr class="group"><td colspan="4">Advertising</td></tr>
+    <tr><td>Product ads, our default</td><td><span class="pv hf">Higgsfield</span> <b>Flare</b> direct "real-scene recipe": the product photo as the only image, a new character described in the prompt, a real location rebranded, the real logo composited afterwards</td><td class="num"><span class="est">est.</span> as Flare</td><td>Put required text (logo, "21+", licence numbers) on in post; don't trust the model with it.</td></tr>
+    <tr><td>Product ads from Marketing Studio presets</td><td><span class="pv hf">Higgsfield</span> <b>Flare</b> + a brand-fit preset + an exact-copy clause</td><td class="num"><span class="est">est.</span> as Flare</td><td>Presets override the brand palette, leak prompt words as ad copy, and dropped the CTA and "21+" in all 9 first-round ads.</td></tr>
+    <tr><td>Ads with a person in them</td><td><span class="pv hf">Higgsfield</span> <b>Flare</b> direct edit with two images: [product, model]</td><td class="num"><span class="est">est.</span> as Flare</td><td>Presets reinterpret people (one reduced a model to a hand).</td></tr>
+    <tr><td>Blurry product photo → clean packshot</td><td><span class="pv hf">Higgsfield</span> <b>Flare</b> (quality max), direct edit, every legible label line spelled out</td><td class="num"><span class="est">est.</span> as Flare</td><td>Models invent label text they can't read; tell it to leave out what it can't read.</td></tr>
+    <tr><td>Social ad layouts (Meta)</td><td>All text, logo, price and CTA in HTML/CSS over a textless AI image; screenshot to exact pixels</td><td class="num">image only</td><td>Meta's old 20% text rule is retired; text coverage is only a legibility check now.</td></tr>
+    <tr class="group"><td colspan="4">Video</td></tr>
+    <tr><td>Edit real footage and keep a real person's face</td><td><span class="pv fal">fal</span> <b>Kling O3 Pro</b> video-to-video edit</td><td class="num">$0.14 / sec</td><td>Send one shot per request (it merges cuts). 3-second minimum.</td></tr>
+    <tr><td>Fix missing or duplicated frames (judder)</td><td><span class="pv fal">fal</span> <b>FILM</b> frame interpolation</td><td class="num">≈$0.003 / frame</td><td>Beat optical-flow tools on fast hand movement.</td></tr>
+    <tr><td>Change spoken words (lip-sync)</td><td><span class="pv fal">fal</span> <b>HeyGen v3 precision</b> for inserted phrases; <b>sync-3</b> for edits of existing speech</td><td class="num">$0.10 / sec</td><td>Avoid sync v2 pro at 59.94 fps (it duplicated every 6th frame). Lip-sync animates every face in the window, even a photo on an end card.</td></tr>
+    <tr><td>Video ads from scratch</td><td><span class="st no">Not done</span> One 5-second Seedance 2.5 test only</td><td class="num">≈$2.31 / 5 s</td><td>No AI video ad has been made or judged yet.</td></tr>
+    <tr class="group"><td colspan="4">Drafts and exploration</td></tr>
+    <tr><td>Near-free mood drafts</td><td><span class="pv hf">Higgsfield</span> <b>Soul V2</b></td><td class="num">~$0.004</td><td>Low resolution (1680×1120), loose poses.</td></tr>
+    <tr><td>A striking stylised look, cheap</td><td><span class="pv fal">fal</span> <b>Seedream 4.5</b></td><td class="num">$0.04</td><td>Only 1 in 6 followed the brief in our test; expect redos.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="versus">
+  <header><p class="eyebrow">02</p><h2>fal vs Higgsfield: what we learned</h2>
+  <p class="soft">One same-prompt test across five models, then two full projects at scale.</p></header>
+  <div class="box">
+    <h3>Same-prompt test: 30 renders, 5 models (AK Sacramento, 28 Sep)</h3>
+    <p class="soft">Two clinic scenes in three looks, the same prompt to every model, scored on the 6 renders each. Pose right = the brief's pose and device placement; face hidden = the practitioner's face kept out (he's a real person); anatomy = every body complete.</p>
+    <div class="tbl"><table class="score">
+      <thead><tr><th>Model</th><th class="num">Cost / image</th><th class="num">Time</th><th class="num">Size</th><th class="num">Pose right</th><th class="num">Face hidden</th><th class="num">Anatomy</th><th>What we saw</th></tr></thead>
+      <tbody>
+      <tr><td><span class="pv hf">Higgsfield</span> <span class="model">Marketing Studio 2.5 Flare</span></td><td class="num"><span class="est">est.</span> $0.20–0.30</td><td class="num">23–27 s</td><td class="num">2048×1360</td><td class="num"><b>6/6</b></td><td class="num"><b>6/6</b></td><td class="num"><b>6/6</b></td><td>Did exactly what the brief said every time. Premium, consistent, realistic.</td></tr>
+      <tr><td><span class="pv fal">fal</span> <span class="model">Nano Banana Pro</span></td><td class="num">$0.15</td><td class="num">26–41 s</td><td class="num">2528×1696</td><td class="num">3/6</td><td class="num">4/6</td><td class="num">6/6</td><td>Solid and sharp, but the most generic of the five.</td></tr>
+      <tr><td><span class="pv hf">Higgsfield</span> <span class="model">Soul V2</span></td><td class="num">~$0.004</td><td class="num">22–167 s</td><td class="num">1680×1120</td><td class="num">2/6</td><td class="num">6/6</td><td class="num">5/6</td><td>Nearly free and moody; loose poses; one skeleton overlay drawn upside down.</td></tr>
+      <tr><td><span class="pv hf">Higgsfield</span> <span class="model">Soul</span></td><td class="num">~$0.19</td><td class="num">78–253 s</td><td class="num">2016×1344</td><td class="num">2/6</td><td class="num">0/6</td><td class="num">5/6</td><td>Ignored the brief most; faces in every shot; slowest.</td></tr>
+      <tr><td><span class="pv fal">fal</span> <span class="model">Seedream 4.5</span></td><td class="num">$0.04</td><td class="num">14–18 s</td><td class="num">2400×1600</td><td class="num">1/6</td><td class="num">3/6</td><td class="num">6/6</td><td>The most striking look, but it drifts off the brief.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="cols">
+    <div class="box"><h3>At scale on fal: rejected</h3>
+      <p>The first AK Sacramento set was 60 images on <span class="pv fal">fal</span> Nano Banana Pro (~$12.39). We rejected it: half bodies, a pillow standing in for a back, a stock look. Our own audit then failed 11 of 47 photos and 8 of 13 illustration plates (4 lumbar vertebrae instead of 5, a nerve drawn over a ligament instead of under it).</p></div>
+    <div class="box"><h3>At scale on Higgsfield: shipped after review</h3>
+      <p>The second set ran on <span class="pv hf">Higgsfield</span> Flare with a much harder brief: a glowing anatomy overlay inside each patient and a red glow at the pain site. The first pass failed 24 of 45 photos (20 overlay errors, 13 hand or body errors). Three review-and-fix rounds brought it to <b id="ak-final">57 images: 19 pass, 38 with minor notes, 0 failed</b>. Our verdict on the look: "let's go this direction". <a href="https://jc1147.github.io/applied-kinesiology-sacramento-images/">See the set</a>.</p></div>
+    <div class="box"><h3>What that means</h3>
+      <p>Flare follows a brief far better, and that's what we pay for. No model gets hands, feet and anatomy right every time, so review is part of the job, not an extra. Budget the review time: an independent zoomed check takes 60–90 minutes per 8 images.</p></div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Platform</th><th><span class="pv hf">Higgsfield</span></th><th><span class="pv fal">fal</span></th></tr></thead>
+    <tbody>
+    <tr><td>Best at</td><td>Briefed photoreal scenes, product ads (Marketing Studio: 75 presets in 5 style groups), plate edits that keep the style</td><td>Breadth: cheap bulk imagery, text-in-image, upscaling, video editing, frame interpolation, lip-sync, voice, transcription</td></tr>
+    <tr><td>Seeing the price</td><td>A free quote per request (<code>/estimate</code>). Flare, Sunburst and Seedance are billed by tokens; the API returns no charge, so the true spend is only in the console.</td><td>A pricing API per model; list prices are predictable per image, per second or per megapixel.</td></tr>
+    <tr><td>Failed requests</td><td>Failed and moderated requests aren't charged. "Temporarily unavailable" is transient: retry once.</td><td>One request per job, no automatic retries (avoids double charges).</td></tr>
+    <tr><td>Missing</td><td>No upscaler, no background removal, no SVG output, no style or product training (Soul ID is people only). Nano Banana Pro, Seedream v4 and Flux Kontext Max aren't available there.</td><td>Background removal and SVG are available on fal but we have never run them.</td></tr>
+    <tr><td>Gotchas</td><td>The SDK gives up polling after 5 minutes but the job keeps running: collect it by request ID, never resubmit. Preset renders show as two requests in the console (whether that bills twice is unverified). A preset's first image must show a product.</td><td>Result URLs are temporary: download everything into the project. Uploads need a named file.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="made">
+  <header><p class="eyebrow">03</p><h2>What we've made, by area</h2></header>
+  <div class="cols">
+    <div class="box"><h3>Web graphics <span class="st ok">Verified</span></h3>
+      <ul>
+        <li><b>AK Sacramento clinic site:</b> anatomy-overlay photos and corrected illustration plates for every inner page (<span class="pv hf">Higgsfield</span> Flare). <a href="https://jc1147.github.io/applied-kinesiology-sacramento-images/">See the set</a>.</li>
+        <li><b>A client's services page:</b> 35 concept renders, 31 on Flare direct and 4 on Recraft V4.1 (icons, an isometric illustration).</li>
+        <li><b>seoguarantee site:</b> 58 textless images, 49 on flux/schnell and 9 on flux/dev (<span class="pv fal">fal</span>).</li>
+        <li><b>Client demo sites:</b> sets of 18 and 6 images on flux/dev, and several smaller sets on Flux Pro.</li>
+        <li><b>Liquor-licence listings:</b> 30 Flux Pro images for about $2, compressed from 484 KB to 163 KB each for mobile.</li>
+        <li><b>OG share cards:</b> the web500 card shipped from GPT Image 2; for the SGEN site, a CSS wordmark over a flux/dev background.</li>
+      </ul></div>
+    <div class="box"><h3>Email &amp; brand</h3>
+      <ul>
+        <li><span class="st no">Not done</span> <b>Email graphics:</b> no AI email headers or banners have been made. A client rejected a series of email headers in September (who made them, and how, isn't recorded), which is a reason to test this properly before offering it.</li>
+        <li><span class="st ok">Verified</span> <b>Logos:</b> hand-built SVG (one brand pass: 3 directions, ~12 marks).</li>
+        <li><span class="st ok">Verified</span> <b>Brand photography:</b> a brand atmosphere set, 9 images on flux/dev for $0.225.</li>
+        <li><span class="st ok">Verified</span> <b>App icon:</b> Recraft V3 and Flux Pro concepts, then flux/dev image-to-image variations of the client's pick. Hex codes in the prompt were painted as text.</li>
+        <li><span class="st ok">Verified</span> <b>Brand kits on file</b> for three clients (colours, fonts, house image style).</li>
+      </ul></div>
+    <div class="box"><h3>Advertising</h3>
+      <ul>
+        <li><span class="st ok">Verified</span> <b>Cannabis retailer product ads:</b> 9 preset ads across three Marketing Studio versions, then brand-fit Flare presets and a Halloween set (3 finals).</li>
+        <li><span class="st ok">Verified</span> <b>A second retailer's ads:</b> preset ads, editorial ads and real-scene ads. The real-scene recipe went 4 for 4 first try and became our default for product ads.</li>
+        <li><span class="st ok">Verified</span> <b>Meta ad concepts (SGEN web500):</b> HTML/CSS text over a textless AI image at 1440×1800. The owner rated one "gold"; none launched yet.</li>
+        <li><span class="st no">Not done</span> <b>Video ads:</b> none made with AI. Our video work so far is editing real footage (below).</li>
+      </ul></div>
+    <div class="box"><h3>Video <span class="st ok">Verified</span></h3>
+      <ul>
+        <li><b>seoguarantee.com intro (76 s):</b> new wording in the owner's own cloned voice with lip-sync, judder repaired with FILM, and an Instagram Stories version. About $9.38 across all rounds.</li>
+        <li><b>Face test:</b> Kling O3 Pro kept the owner's face; Seedance 2.5 video-edit changed it.</li>
+        <li><b>Text-to-video:</b> one 5-second Seedance 2.5 test clip only.</li>
+      </ul></div>
+  </div>
+  <div class="callout"><b>Compliance we've already hit on ads:</b> cannabis ads use clearly adult characters, a sealed pack, no smoking, and no kid-appeal presets. California needs the retailer's licence number (we couldn't find one client's and left it off). A preset dropped the required "21+" twice, so it goes on in post. Racing imagery showed no driving. For regulated subjects, check every image against what the rule allows: Flux Pro drew off-sale liquor licences as bars.</div>
+</section>
+
+<section id="models">
+  <header><p class="eyebrow">04</p><h2>Model cards: cost vs benefit</h2>
+  <p class="soft">Every model we've run, what it cost and what it's for. List prices unless marked; <span class="est">est.</span> = our estimate.</p></header>
+  <div class="tbl"><table>
+    <thead><tr><th>Model</th><th class="num">Price</th><th class="num">Speed</th><th>Good for</th><th>Avoid for / gotchas</th></tr></thead>
+    <tbody>
+    <tr class="group"><td colspan="5">Higgsfield · images</td></tr>
+    <tr><td><span class="model">Marketing Studio 2.5 Flare</span><span class="ep">marketing-studio/image/flare</span></td><td class="num"><span class="est">est.</span> $0.20–0.30</td><td class="num">21–47 s direct<br>46–59 s preset</td><td>Briefed photoreal scenes, product ads, packshot cleanup, editing plates while keeping their style. Only model to follow the brief 6/6. Perfect product labels in all 9 test ads.</td><td>Invents label text it can't read; rewrites real data on screens; presets override brand colours. Billed by tokens: the real cost is only in the console.</td></tr>
+    <tr><td><span class="model">Marketing Studio 2.5 Sunburst</span><span class="ep">marketing-studio/image/sunburst</span></td><td class="num">token-metered</td><td class="num">60–65 s</td><td>No advantage found over Flare.</td><td>Dropped a decimal from a product label ("25G").</td></tr>
+    <tr><td><span class="model">Marketing Studio 2.0 Alpha</span><span class="ep">marketing-studio/image</span></td><td class="num">$0.44 (2k high)</td><td class="num">116–125 s</td><td>No advantage found.</td><td>Slowest. The project CLI's default model is Alpha, so pass <code>--model flare</code>.</td></tr>
+    <tr><td><span class="model">Soul</span><span class="ep">higgsfield-ai/soul/standard</span></td><td class="num">$0.19 (1080p)</td><td class="num">78–253 s</td><td>—</td><td>Ignores detailed staging; faces in every test shot; max 1080p ("2K" returns an error).</td></tr>
+    <tr><td><span class="model">Soul V2</span><span class="ep">higgsfield-ai/soul/v2/standard</span></td><td class="num">~$0.004</td><td class="num">22–167 s</td><td>Near-free mood drafts.</td><td>Low resolution, loose poses.</td></tr>
+    <tr><td><span class="model">Recraft V4.1 / V4.1 Pro</span><span class="ep">recraft/v4.1/(pro/)text-to-image</span></td><td class="num">$0.035 / $0.21</td><td class="num">11 s / 20 s</td><td>Icons (1024 px) and an isometric illustration (2688×1536).</td><td>No transparency despite PNG output. No quality verdict yet.</td></tr>
+    <tr class="group"><td colspan="5">Higgsfield · video</td></tr>
+    <tr><td><span class="model">Seedance 2.5 text-to-video</span><span class="ep">bytedance/seedance-2.5/text-to-video</span></td><td class="num">≈$2.31 / 5 s (720p)</td><td class="num">~2.5 min</td><td>One test clip; not judged for ads yet.</td><td>Billed by video tokens.</td></tr>
+    <tr><td><span class="model">Seedance 2.5 video-edit</span><span class="ep">bytedance/seedance-2.5/video-edit</span></td><td class="num">≈$0.28 / s (720p)</td><td class="num">~13.5 min</td><td>—</td><td>Changed a real person's face (narrower face, sharper chin). 720p max.</td></tr>
+    <tr class="group"><td colspan="5">fal · images</td></tr>
+    <tr><td><span class="model">flux/dev</span><span class="ep">fal-ai/flux/dev</span></td><td class="num">~$0.025</td><td class="num">fast</td><td>House default for textless web and brand photography; image-to-image variations.</td><td>Text and logos come out mangled; reads hex codes as mood at best.</td></tr>
+    <tr><td><span class="model">flux/schnell</span><span class="ep">fal-ai/flux/schnell</span></td><td class="num">$0.003 / MP</td><td class="num">fast</td><td>Bulk site imagery (49 images for seoguarantee).</td><td>No verdict recorded.</td></tr>
+    <tr><td><span class="model">Flux Pro 1.1</span><span class="ep">fal-ai/flux-pro/v1.1</span></td><td class="num">$0.03–0.05</td><td class="num">4–8 s</td><td>Photoreal only, fast (listings, demo sites).</td><td>Worst at text (1.0/5). Painted pseudo-text on signs despite "no signage".</td></tr>
+    <tr><td><span class="model">Flux Pro Kontext</span><span class="ep">fal-ai/flux-pro/kontext</span></td><td class="num">$0.04</td><td class="num">—</td><td>Small targeted edits (a name patch on a photo).</td><td>—</td></tr>
+    <tr><td><span class="model">Nano Banana Pro</span><span class="ep">fal-ai/nano-banana-pro(/edit)</span></td><td class="num">$0.15 (2K)</td><td class="num">22–71 s</td><td>Value pick for text-in-image (4.0/5 at 15% of GPT Image 2's price).</td><td>Generic photos; the rejected first AK set. Faces crept in until cropped.</td></tr>
+    <tr><td><span class="model">GPT Image 2</span><span class="ep">openai/gpt-image-2</span></td><td class="num">$1.00</td><td class="num">~91 s</td><td>Text baked into the image: exact capitals, gradient headline, monospace line (4.5/5).</td><td>Expensive; keep it for permanent brand assets.</td></tr>
+    <tr><td><span class="model">Seedream 4.5</span><span class="ep">fal-ai/bytedance/seedream/v4.5</span></td><td class="num">$0.04</td><td class="num">14–18 s</td><td>A striking look for little money.</td><td>Drifts off the brief (1/6); drew the wrong bone in an edit.</td></tr>
+    <tr><td><span class="model">Ideogram V3</span><span class="ep">fal-ai/ideogram/v3</span></td><td class="num">$0.03</td><td class="num">12.5 s</td><td>—</td><td>Unreliable capitals; ignored the monospace request (2.5/5).</td></tr>
+    <tr><td><span class="model">Recraft V4 Pro</span><span class="ep">fal-ai/recraft/v4/pro</span></td><td class="num">$0.25</td><td class="num">~37 s</td><td>—</td><td>Ignored the requested aspect (2.0/5).</td></tr>
+    <tr><td><span class="model">Nano Banana</span><span class="ep">fal-ai/nano-banana/edit</span></td><td class="num">$0.04</td><td class="num">13–19 s</td><td>—</td><td>Low resolution; showed faces.</td></tr>
+    <tr class="group"><td colspan="5">fal · upscaling</td></tr>
+    <tr><td><span class="model">SeedVR2</span><span class="ep">fal-ai/seedvr/upscale/image</span></td><td class="num">$0.001 / MP</td><td class="num">—</td><td>People and cut-outs (chosen).</td><td>Rewrites printed letters.</td></tr>
+    <tr><td><span class="model">Topaz High Fidelity V2</span><span class="ep">fal-ai/topaz/upscale/image</span></td><td class="num">$0.08</td><td class="num">—</td><td>Anything with printed text: every word unchanged (chosen).</td><td>Less crisp on people. Turn face enhancement off.</td></tr>
+    <tr><td><span class="model">Recraft Crisp · AuraSR · ESRGAN</span></td><td class="num">≤$0.01</td><td class="num">—</td><td>—</td><td>Rejected: plastic skin, invented letters, grain.</td></tr>
+    <tr class="group"><td colspan="5">fal · video &amp; audio</td></tr>
+    <tr><td><span class="model">Kling O3 Pro video edit</span><span class="ep">fal-ai/kling-video/o3/pro/video-to-video/edit</span></td><td class="num">$0.14 / s</td><td class="num">4–11 min</td><td>Editing real footage while keeping a real face (won the face test).</td><td>Merges cuts: one shot per request. 3 s minimum.</td></tr>
+    <tr><td><span class="model">FILM</span><span class="ep">fal-ai/film</span></td><td class="num">≈$0.003 / frame</td><td class="num">~2.4 s / pair</td><td>Rebuilding missing frames (111 frames for $0.32).</td><td>—</td></tr>
+    <tr><td><span class="model">HeyGen v3 precision lip-sync</span><span class="ep">fal-ai/heygen/v3/lipsync/precision</span></td><td class="num">$0.10 / s</td><td class="num">—</td><td>Inserted phrases, no repeated frames.</td><td>Set <code>enable_dynamic_duration=false</code>; the input video needs an audio track.</td></tr>
+    <tr><td><span class="model">sync-3 · sync v2 pro</span><span class="ep">fal-ai/sync-lipsync/v3 · v2/pro</span></td><td class="num">v2 pro $5 / min</td><td class="num">—</td><td>sync-3: edits of existing speech.</td><td>v2 pro duplicated every 6th frame at 59.94 fps; the client saw it as glitchy.</td></tr>
+    <tr><td><span class="model">Voice &amp; transcripts</span><span class="ep">minimax voice-clone · speech-02-hd · elevenlabs scribe-v2</span></td><td class="num">$1.50 once · ~$0.10 / 1K chars · $0.008 / min</td><td class="num">—</td><td>Cloning a voice from a clip of 10 s or more; word-timed transcripts.</td><td>Scribe treats a spoken domain name as one token.</td></tr>
+    </tbody>
+  </table></div>
+  <details><summary>Priced but never generated (Higgsfield)</summary>
+    <ul>
+      <li><span class="st pr">Priced only</span> Grok Imagine Image 2.0 $0.04–0.08 · Qwen Image 3 $0.04 (1k) / $0.075 (2k) · Ideogram V4 $0.03–0.10 · Z-Image Turbo $0.015 · Soul Cinema $0.006.</li>
+      <li><span class="st pr">Priced only</span> Genjutsu motion transfer / object swap ≈$0.68 per second at 720p.</li>
+      <li>Listed only: Kling 2.5 Turbo and Hailuo 2.3 image/text-to-video; the Kling O3 video-edit quote returned an error on Higgsfield.</li>
+    </ul>
+  </details>
+</section>
+
+<section id="process">
+  <header><p class="eyebrow">05</p><h2>How we get shippable output</h2>
+  <p class="soft">What turned "AI images" into images a client accepts.</p></header>
+  <div class="cols">
+    <div class="box"><h3>Review before anyone sees it</h3>
+      <ul>
+        <li>An independent reviewer checks every image zoomed in: counts the fingers on every hand and the toes on every foot, checks every body is whole, checks anatomy is placed and oriented correctly, and looks for text.</li>
+        <li>It takes 60–90 minutes per 8 images. Tell the client up front and run batches in parallel.</li>
+        <li>Record every verdict, pick and overruled point with its reason, so the set can be rebuilt and audited.</li>
+        <li>Check the final crops, not just the renders: a 3:2 render cropped to 7:5 lost a patient's head and toes.</li>
+      </ul></div>
+    <div class="box"><h3>Prompt rules that worked</h3>
+      <ul>
+        <li>Exact copy only: "Render only the following text, exactly as written, and no other words", followed by the lines in quotes.</li>
+        <li>Counts, spelled out: "exactly five lumbar vertebrae", "exactly N bullets and no others", "the nerve passes UNDER the band".</li>
+        <li>Say who is in the scene and who isn't ("one clinician in a white shirt, head out of frame; no receptionist"), and for empty scenes say "no people, no hands".</li>
+        <li>Face-down patients: shoot from the foot end. Seen side-on, the model draws the spine across the body.</li>
+        <li>One foot in side view, never two soles to camera (six toes, four toes, upside-down bones).</li>
+        <li>Dark work: lead with "the entire background is near-black … never light, cream or beige".</li>
+        <li>Colours in words, never hex codes (an app-icon run painted the hex codes as text).</li>
+        <li>When a model keeps painting text on a surface, remove the surface from the prompt.</li>
+      </ul></div>
+    <div class="box"><h3>House rules</h3>
+      <ul>
+        <li>Generate textless images; put text, logos, prices and CTAs in HTML or composite them afterwards.</li>
+        <li>No AI-invented logos, photo-realistic UI mockups or product renders. Product ads start from the real product photo.</li>
+        <li>Download and store every image in the project; provider URLs expire.</li>
+        <li>Compress for mobile before publishing (canvas quality 0.76 took a 484 KB image to 163 KB).</li>
+        <li>If the client likes an image, edit that image; don't regenerate from an earlier draft.</li>
+        <li>Anchor the look to an image the client has approved before producing a full set.</li>
+      </ul></div>
+  </div>
+</section>
+
+<section id="costs">
+  <header><p class="eyebrow">06</p><h2>Costs we've recorded</h2>
+  <p class="soft">No invoice or billing export was found for either provider. fal figures are list price × requests; Higgsfield token-billed figures are estimates until checked in the console.</p></header>
+  <div class="tbl"><table>
+    <thead><tr><th>Project</th><th>Models</th><th class="num">Spend</th><th>Basis</th></tr></thead>
+    <tbody>
+    <tr><td>AK Sacramento, first set (rejected)</td><td><span class="pv fal">fal</span> Nano Banana Pro (+ model test)</td><td class="num">~$12.39</td><td>list price</td></tr>
+    <tr><td>AK Sacramento, same-prompt test</td><td><span class="pv fal">fal</span> NBP + Seedream · <span class="pv hf">Higgsfield</span> Soul + Soul V2</td><td class="num">$1.14 + ≈$1.15</td><td>list price / quotes</td></tr>
+    <tr><td>AK Sacramento, second set</td><td><span class="pv hf">Higgsfield</span> Flare, at least <span id="ak-renders">157</span> renders</td><td class="num"><span class="est">est.</span> <span id="ak-cost">$31–47</span></td><td>estimate; console has the truth</td></tr>
+    <tr><td>seoguarantee.com intro video, all rounds</td><td><span class="pv fal">fal</span> Kling, lip-sync, voice, FILM · <span class="pv hf">Higgsfield</span> Seedance edit</td><td class="num">~$9.38</td><td>list price</td></tr>
+    <tr><td>Seedance text-to-video test</td><td><span class="pv hf">Higgsfield</span></td><td class="num">≈$2.31</td><td>token rate</td></tr>
+    <tr><td>Liquor-licence listing images (52 generations)</td><td><span class="pv fal">fal</span> Flux Pro 1.1</td><td class="num">~$2.00</td><td>as logged</td></tr>
+    <tr><td>OG-card bakeoff (5 models)</td><td><span class="pv fal">fal</span></td><td class="num">$1.46</td><td>as logged</td></tr>
+    <tr><td>Magazine cover edit + upscaler tests</td><td><span class="pv fal">fal</span></td><td class="num">≈$0.22</td><td>per-request meter</td></tr>
+    <tr><td>Demo and brand image sets (18 · 9 · 5 · 2 images)</td><td><span class="pv fal">fal</span> flux/dev, Flux Pro</td><td class="num">~$0.45 · $0.23 · ~$0.20 · ~$0.10</td><td>as logged</td></tr>
+    <tr><td>Two retail ad clients and a services-page client</td><td><span class="pv hf">Higgsfield</span> Flare (+ Alpha, Sunburst, Recraft)</td><td class="num">not recorded</td><td>token-billed; check the console</td></tr>
+    </tbody>
+  </table></div>
+  <p class="callout info">Rule of thumb from the numbers: image generation is cheap next to the time spent reviewing and fixing. A full site set on Flare is tens of dollars; the review loop is hours. Price the review into the job.</p>
+</section>
+
+<section id="tools">
+  <header><p class="eyebrow">07</p><h2>Tools &amp; access</h2></header>
+  <div class="cols">
+    <div class="box"><h3><span class="pv hf">Higgsfield</span> project</h3>
+      <p>The toolkit is this page's repo: <a href="https://github.com/jc1147/higgsfield-playbook">github.com/jc1147/higgsfield-playbook</a>. Run <code>npm install</code> once.</p>
+      <pre>npm run image -- --model flare --prompt "…" --aspect-ratio 3:2
+npm run image -- --model flare --image product.png --prompt "…"
+npm run graphic-ads -- --model flare --image product.png --prompt "…"
+npm run presets            # live preset catalog with cover images
+npm run image -- … --estimate   # free price quote, no render</pre>
+      <p>Batch runner: <a href="https://github.com/jc1147/applied-kinesiology-sacramento-images/blob/main/hf-batch.mts">hf-batch.mts</a> in the AK Sacramento repo. It makes one request per job with no retries, saves each render's quote and request ID, and skips finished outputs.</p>
+      <p>Logo and "21+" overlays: <code>tools/logo-cutout.ps1</code>, <code>tools/composite-logo.ps1</code>.</p></div>
+    <div class="box"><h3><span class="pv fal">fal</span></h3>
+      <p>Client-site image generator (flux/dev, idempotent, dry-run prints the cost):</p>
+      <pre>node generate-images.mjs &lt;buildDir&gt; --dry-run   # internal site builder</pre>
+      <p>Batch with reference images: <a href="https://github.com/jc1147/applied-kinesiology-sacramento-images/blob/main/fal-batch.mjs">fal-batch.mjs</a>. Price lookup: <a href="https://github.com/jc1147/applied-kinesiology-sacramento-images/blob/main/falprice.mjs">falprice.mjs</a> (fal pricing API).</p>
+      <p>Also available inside Claude Code through the fal MCP server.</p></div>
+    <div class="box"><h3>Keys and billing</h3>
+      <ul>
+        <li>Higgsfield key: <code>HF_CREDENTIALS</code> in a git-ignored <code>.env.local</code> (copy <code>.env.example</code>). True spend, limits and keys: console.higgsfield.ai.</li>
+        <li>fal key: <code>FAL_KEY</code> in your environment or MCP config, never in a repo.</li>
+        <li>Keep keys out of documents, screenshots and logs.</li>
+      </ul></div>
+  </div>
+</section>
+
+<section id="gaps">
+  <header><p class="eyebrow">08</p><h2>Open questions &amp; the next tests to run</h2></header>
+  <ol>
+    <li><b>Email graphics:</b> run a real test (header and banner at 600 px wide, rendered at 2×), textless image plus live HTML text, checked in the client's email tool. Nothing exists yet.</li>
+    <li><b>Video ads:</b> make and judge one short product ad (Seedance 2.5 or Kling) before offering video.</li>
+    <li><b>Typography:</b> Flare vs GPT Image 2 and Nano Banana Pro on text-in-image hasn't been tested.</li>
+    <li><b>Real Flare cost:</b> read the per-render charge in the Higgsfield console and replace the $0.20–0.30 estimate. Also check whether preset renders (two console requests each) bill twice.</li>
+    <li><b>Background removal and SVG on fal:</b> they're the reasons we keep fal next to Higgsfield, but we've never run either.</li>
+    <li><b>Nano Banana 2</b> is listed on fal and never tried.</li>
+  </ol>
+</section>
+
+<footer>
+  <p>Sources: every figure above comes from our project notes, logs, result files and review reports. A line-by-line fact sheet with file references is kept internally.</p>
+  <p>Where our notes disagree, the fact sheet records it: Flux Pro's price, for example, appears as $0.03, $0.04 and $0.05.</p>
+</footer>
+</div>
+</body>
+</html>

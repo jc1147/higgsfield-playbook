@@ -1,0 +1,27 @@
+{
+  "name": "higgsfield",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Higgsfield API: Seedance 2.5 text-to-video and Marketing Studio image examples",
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts",
+    "image": "tsx marketing-studio.ts direct",
+    "product-shots": "tsx marketing-studio.ts product-shots",
+    "graphic-ads": "tsx marketing-studio.ts graphic-ads",
+    "marketplace-design": "tsx marketing-studio.ts marketplace-design",
+    "presets": "tsx presets.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=21.7"
+  },
+  "dependencies": {
+    "@higgsfield/client": "^0.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
